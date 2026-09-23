@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
 import type { ZodError } from "zod";
+import { FAILURE_HEADER } from "@/lib/constants";
 import type { ApiError, ApiSuccess } from "@/lib/schemas/envelope";
-
-/** The UI toggle flips this header to exercise the error paths on purpose. */
-export const FAILURE_HEADER = "x-simulate-failure";
 
 const MIN_LATENCY_MS = 300;
 const MAX_LATENCY_MS = 900;
