@@ -24,6 +24,22 @@ const PROVIDERS: Provider[] = [
   { id: "prv_06", name: "Dr. Tobias Berg", specialty: "Endocrinology" },
 ];
 
+// A mix of Nigerian and other names. Nigerian names are written the way they
+// are used day to day, without tone marks.
+const NIGERIAN_FIRST_NAMES = [
+  "Tayo", "Bola", "Yemi", "Sade", "Tunde", "Seyi", "Funke", "Kemi", "Dapo",
+  "Nike", "Chidi", "Ngozi", "Emeka", "Amaka", "Chinedu", "Adaeze", "Kelechi",
+  "Ifeoma", "Obi", "Uche", "Aisha", "Musa", "Ibrahim", "Fatima", "Zainab",
+  "Yusuf", "Halima", "Bello", "Amina", "Efe", "Oghenekaro", "Ese", "Onome",
+  "Tega", "Osaze", "Idia",
+];
+const NIGERIAN_LAST_NAMES = [
+  "Adedigba", "Adeyemi", "Adebayo", "Okafor", "Ogundipe", "Balogun",
+  "Ogunleye", "Nwosu", "Eze", "Achebe", "Okonkwo", "Adeleke", "Olawale",
+  "Abiodun", "Chukwu", "Uzoma", "Okeke", "Oyelaran", "Fashola", "Danjuma",
+  "Aliyu", "Nwachukwu", "Afolabi", "Ojukwu", "Akinyemi",
+];
+
 const CARRIERS = ["Aetna", "Blue Cross Blue Shield", "Cigna", "UnitedHealthcare"];
 const CANCEL_REASONS = [
   "Patient rescheduled for a later date",
@@ -38,6 +54,19 @@ function clinicDateString(date: Date): string {
   const month = `${local.getMonth() + 1}`.padStart(2, "0");
   const day = `${local.getDate()}`.padStart(2, "0");
   return `${year}-${month}-${day}`;
+}
+
+function randomPatientName(): { firstName: string; lastName: string } {
+  if (faker.datatype.boolean(0.5)) {
+    return {
+      firstName: faker.helpers.arrayElement(NIGERIAN_FIRST_NAMES),
+      lastName: faker.helpers.arrayElement(NIGERIAN_LAST_NAMES),
+    };
+  }
+  return {
+    firstName: faker.person.firstName(),
+    lastName: faker.person.lastName(),
+  };
 }
 
 function usPhone(): string {
@@ -103,14 +132,17 @@ function seed(): Store {
     const startTime = new Date(startsAt).getTime();
     const status = statusFor(startTime, now);
     const insured = faker.datatype.boolean(0.45);
+    const name = randomPatientName();
 
     appointments.push({
       id: `apt_${appointments.length.toString().padStart(4, "0")}`,
       patient: {
-        firstName: faker.person.firstName(),
-        lastName: faker.person.lastName(),
+        firstName: name.firstName,
+        lastName: name.lastName,
         dateOfBirth: adultDob(new Date(now)),
-        email: faker.internet.email().toLowerCase(),
+        email: faker.internet
+          .email({ firstName: name.firstName, lastName: name.lastName })
+          .toLowerCase(),
         phone: usPhone(),
       },
       providerId: provider.id,
