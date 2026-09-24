@@ -48,6 +48,11 @@ export async function POST(request: NextRequest) {
   const result = createAppointment(parsed.data, idempotencyKey);
 
   if (!result.ok) {
+    if (result.kind === "unknown-provider") {
+      return fail("That provider does not exist", 422, {
+        providerId: "Choose a valid provider",
+      });
+    }
     return fail("That provider is already booked at this time", 409);
   }
 

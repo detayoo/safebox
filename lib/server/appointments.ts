@@ -104,7 +104,8 @@ export function getAppointment(id: string): Appointment | undefined {
 
 export type CreateResult =
   | { ok: true; appointment: Appointment; replayed: boolean }
-  | { ok: false; kind: "conflict" };
+  | { ok: false; kind: "conflict" }
+  | { ok: false; kind: "unknown-provider" };
 
 export function createAppointment(
   input: CreateAppointmentInput,
@@ -118,6 +119,10 @@ export function createAppointment(
       ? store.appointments.find((appointment) => appointment.id === existingId)
       : undefined;
     if (existing) return { ok: true, appointment: existing, replayed: true };
+  }
+
+  if (!store.providers.some((provider) => provider.id === input.providerId)) {
+    return { ok: false, kind: "unknown-provider" };
   }
 
   if (findConflict(input.providerId, input.startsAt, input.durationMinutes)) {
