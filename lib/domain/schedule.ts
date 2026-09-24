@@ -87,11 +87,16 @@ export function checkSlot(
   }
 
   if (minutes + durationMinutes > CLOSE_MINUTES) {
+    const latest = CLOSE_MINUTES - durationMinutes;
+    const latestHour = Math.floor(latest / 60);
+    const latestMinute = latest % 60;
+    const displayHour = latestHour % 12 === 0 ? 12 : latestHour % 12;
+    const meridiem = latestHour >= 12 ? "PM" : "AM";
     return {
       ok: false,
-      reason: `A ${durationMinutes}-minute visit must start by ${
-        (CLOSE_MINUTES - durationMinutes) / 60
-      }:00 PM`,
+      reason: `A ${durationMinutes}-minute visit must start by ${displayHour}:${String(
+        latestMinute,
+      ).padStart(2, "0")} ${meridiem}`,
     };
   }
 
