@@ -1,7 +1,7 @@
 import { queryOptions } from "@tanstack/react-query";
 import { api } from "@/lib/api/endpoints";
 
-export const providerKeys = {
+const providerKeys = {
   all: ["providers"] as const,
 };
 

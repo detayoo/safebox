@@ -16,8 +16,7 @@ export const BOOKING_STEPS = [
   { id: "review", title: "Review" },
 ] as const;
 
-export const paymentTypeSchema = z.enum(["self", "insurance"]);
-export type PaymentType = z.infer<typeof paymentTypeSchema>;
+const paymentTypeSchema = z.enum(["self", "insurance"]);
 
 /**
  * The wizard's own shape: date and time are separate fields, and payment is a

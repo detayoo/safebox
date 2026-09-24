@@ -14,8 +14,6 @@ export const STATUSES = [
   "cancelled",
   "no-show",
 ] as const;
-export const DURATIONS = [30, 60] as const;
-
 export const visitTypeSchema = z.enum(VISIT_TYPES);
 export const modeSchema = z.enum(MODES);
 export const statusSchema = z.enum(STATUSES);

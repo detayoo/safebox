@@ -11,8 +11,6 @@ export const SLOT_MINUTES = 30;
 const OPEN_MINUTES = 9 * 60;
 const CLOSE_MINUTES = 17 * 60;
 
-export type WeekdayIndex = 0 | 1 | 2 | 3 | 4 | 5 | 6;
-
 function isWeekday(day: number): boolean {
   return day >= 1 && day <= 5;
 }
@@ -40,7 +38,7 @@ export function clinicDayStart(date: Date): number {
   ).getTime();
 }
 
-export function clinicDayOfWeek(date: Date): number {
+function clinicDayOfWeek(date: Date): number {
   return new TZDate(date, CLINIC_TIME_ZONE).getDay();
 }
 

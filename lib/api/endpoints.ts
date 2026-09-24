@@ -8,7 +8,7 @@ import type {
 import type { Paginated } from "@/lib/schemas/envelope";
 import type { AppointmentListParams } from "@/lib/schemas/list-params";
 
-export function toAppointmentsQuery(params: AppointmentListParams): string {
+function toAppointmentsQuery(params: AppointmentListParams): string {
   const search = new URLSearchParams();
   search.set("page", String(params.page));
   search.set("pageSize", String(params.pageSize));

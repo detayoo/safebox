@@ -23,5 +23,3 @@ export type ApiError = {
   /** Field-path keyed messages, e.g. `{ "patient.email": "..." }`. */
   errors?: Record<string, string>;
 };
-
-export type ApiResponse<T> = ApiSuccess<T> | ApiError;
