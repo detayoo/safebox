@@ -1,6 +1,5 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
 import {
   debounce,
   parseAsArrayOf,
@@ -19,7 +18,7 @@ import {
   type SortOrder,
 } from "@/lib/schemas/list-params";
 
-export const DEFAULT_PAGE_SIZE = 20;
+const DEFAULT_PAGE_SIZE = 20;
 
 const filterParsers = {
   page: parseAsInteger.withDefault(1),
@@ -49,10 +48,9 @@ type Filters = {
  * current entry and debounces, so typing never floods history.
  */
 export function useAppointmentsParams() {
-  const [rawFilters, setFilters] = useQueryStates(filterParsers, {
+  const [filters, setFilters] = useQueryStates(filterParsers, {
     history: "push",
   });
-  const filters = rawFilters as Filters;
 
   const [search, setSearch] = useQueryState(
     "search",
@@ -62,76 +60,55 @@ export function useAppointmentsParams() {
     }),
   );
 
-  const params = useMemo<AppointmentListParams>(
-    () => ({
-      page: filters.page,
-      pageSize: filters.pageSize,
-      search: search || undefined,
-      status: filters.status.length > 0 ? filters.status : undefined,
-      providerId: filters.providerId || undefined,
-      from: filters.from || undefined,
-      to: filters.to || undefined,
-      sortBy: filters.sortBy,
-      sortOrder: filters.sortOrder,
-    }),
-    [filters, search],
-  );
+  const params: AppointmentListParams = {
+    page: filters.page,
+    pageSize: filters.pageSize,
+    search: search || undefined,
+    status: filters.status.length > 0 ? filters.status : undefined,
+    providerId: filters.providerId || undefined,
+    from: filters.from || undefined,
+    to: filters.to || undefined,
+    sortBy: filters.sortBy,
+    sortOrder: filters.sortOrder,
+  };
 
-  const applyFilters = useCallback(
-    (patch: Partial<Filters>) => {
-      void setFilters({ ...patch, page: 1 });
-    },
-    [setFilters],
-  );
+  function applyFilters(patch: Partial<Filters>) {
+    void setFilters({ ...patch, page: 1 });
+  }
 
-  const setPage = useCallback(
-    (page: number) => {
-      void setFilters({ page });
-    },
-    [setFilters],
-  );
+  function setPage(page: number) {
+    void setFilters({ page });
+  }
 
-  const setPageSize = useCallback(
-    (pageSize: number) => {
-      void setFilters({ pageSize, page: 1 });
-    },
-    [setFilters],
-  );
+  function setPageSize(pageSize: number) {
+    void setFilters({ pageSize, page: 1 });
+  }
 
-  const toggleStatus = useCallback(
-    (status: AppointmentStatus) => {
-      const next = filters.status.includes(status)
-        ? filters.status.filter((value) => value !== status)
-        : [...filters.status, status];
-      applyFilters({ status: next });
-    },
-    [applyFilters, filters.status],
-  );
+  function toggleStatus(status: AppointmentStatus) {
+    const next = filters.status.includes(status)
+      ? filters.status.filter((value) => value !== status)
+      : [...filters.status, status];
+    applyFilters({ status: next });
+  }
 
-  const setProviderId = useCallback(
-    (providerId: string) => applyFilters({ providerId }),
-    [applyFilters],
-  );
+  function setProviderId(providerId: string) {
+    applyFilters({ providerId });
+  }
 
-  const setDateRange = useCallback(
-    (range: { from: string; to: string }) => applyFilters(range),
-    [applyFilters],
-  );
+  function setDateRange(range: { from: string; to: string }) {
+    applyFilters(range);
+  }
 
-  const setSort = useCallback(
-    (sortBy: SortField, sortOrder: SortOrder) => applyFilters({ sortBy, sortOrder }),
-    [applyFilters],
-  );
+  function setSort(sortBy: SortField, sortOrder: SortOrder) {
+    applyFilters({ sortBy, sortOrder });
+  }
 
-  const updateSearch = useCallback(
-    (value: string) => {
-      void setSearch(value);
-      if (filters.page !== 1) void setFilters({ page: 1 });
-    },
-    [filters.page, setFilters, setSearch],
-  );
+  function updateSearch(value: string) {
+    void setSearch(value);
+    if (filters.page !== 1) void setFilters({ page: 1 });
+  }
 
-  const clearFilters = useCallback(() => {
+  function clearFilters() {
     void setSearch(null);
     void setFilters({
       page: 1,
@@ -142,7 +119,7 @@ export function useAppointmentsParams() {
       sortBy: "startsAt",
       sortOrder: "desc",
     });
-  }, [setFilters, setSearch]);
+  }
 
   const hasActiveFilters =
     search.trim() !== "" ||
@@ -166,7 +143,3 @@ export function useAppointmentsParams() {
     hasActiveFilters,
   };
 }
-
-export type AppointmentsParamsController = ReturnType<
-  typeof useAppointmentsParams
->;
