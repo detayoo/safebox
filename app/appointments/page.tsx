@@ -1,4 +1,7 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
+import { AppointmentsTable } from "@/components/appointments/appointments-table";
+import { TableSkeleton } from "@/components/common/table-skeleton";
 
 export const metadata: Metadata = {
   title: "Appointments",
@@ -13,6 +16,16 @@ export default function AppointmentsPage() {
           Search, filter and manage the clinic schedule.
         </p>
       </div>
+      {/* The table reads filters from the URL, so it opts out of the static shell. */}
+      <Suspense
+        fallback={
+          <div className="bg-card overflow-hidden rounded-md border">
+            <TableSkeleton />
+          </div>
+        }
+      >
+        <AppointmentsTable />
+      </Suspense>
     </div>
   );
 }
