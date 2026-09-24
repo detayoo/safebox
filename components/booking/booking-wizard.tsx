@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -37,6 +37,7 @@ export function BookingWizard() {
   const [step, setStep] = useState(0);
   const [confirmation, setConfirmation] = useState<Appointment | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
+  const stepHeadingRef = useRef<HTMLHeadingElement>(null);
 
   const providersQuery = useQuery(providersQueryOptions());
   const createMutation = useCreateAppointment();
@@ -72,17 +73,20 @@ export function BookingWizard() {
     const valid = await form.trigger(STEP_FIELDS[step], { shouldFocus: true });
     if (valid) {
       setStep((current) => Math.min(current + 1, BOOKING_STEPS.length - 1));
+      stepHeadingRef.current?.focus();
     }
   }
 
   function goBack() {
     setFormError(null);
     setStep((current) => Math.max(0, current - 1));
+    stepHeadingRef.current?.focus();
   }
 
   function goTo(target: number) {
     setFormError(null);
     setStep(target);
+    stepHeadingRef.current?.focus();
   }
 
   async function handleSubmit() {
@@ -187,6 +191,9 @@ export function BookingWizard() {
 
       <Card>
         <CardContent className="pt-6">
+          <h2 ref={stepHeadingRef} tabIndex={-1} className="sr-only">
+            {BOOKING_STEPS[step].title}
+          </h2>
           {renderStep()}
 
           {formError ? (
