@@ -88,6 +88,19 @@ export function formatDuration(minutes: number): string {
   return `${minutes} min`;
 }
 
+/** Today's date in the clinic's zone, as a plain Date for the calendar. */
+export function clinicTodayDate(): Date {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: CLINIC_TIME_ZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(new Date());
+  const read = (type: Intl.DateTimeFormatPartTypes) =>
+    Number(parts.find((part) => part.type === type)?.value);
+  return new Date(read("year"), read("month") - 1, read("day"));
+}
+
 export function patientName(appointment: Appointment): string {
   return `${appointment.patient.firstName} ${appointment.patient.lastName}`;
 }
