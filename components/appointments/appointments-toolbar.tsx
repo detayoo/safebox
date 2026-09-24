@@ -81,13 +81,19 @@ export function AppointmentsToolbar({
         <span>
           {total} appointment{total === 1 ? "" : "s"}
         </span>
-        {isFetching ? (
-          <>
-            <span aria-hidden>·</span>
-            <LoaderCircle className="size-3.5 animate-spin" />
-            <span>Updating…</span>
-          </>
-        ) : null}
+        <span
+          role="status"
+          aria-live="polite"
+          className="inline-flex items-center gap-1.5"
+        >
+          {isFetching ? (
+            <>
+              <span aria-hidden>·</span>
+              <LoaderCircle className="size-3.5 animate-spin" />
+              <span>Updating…</span>
+            </>
+          ) : null}
+        </span>
       </div>
     </div>
   );
