@@ -4,11 +4,7 @@ import { useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { useTable } from "@tanstack/react-table";
-import type {
-  PaginationState,
-  SortingState,
-  Updater,
-} from "@tanstack/react-table";
+import type { PaginationState, Updater } from "@tanstack/react-table";
 import { ArrowDown, ArrowUp, ChevronsUpDown } from "lucide-react";
 import { AppointmentsPagination } from "@/components/appointments/appointments-pagination";
 import { AppointmentsToolbar } from "@/components/appointments/appointments-toolbar";
@@ -30,9 +26,15 @@ import {
 import { appointmentsListOptions } from "@/lib/queries/appointments";
 import { providersQueryOptions } from "@/lib/queries/providers";
 import type { Appointment, Provider } from "@/lib/schemas/appointment";
+import type { SortField } from "@/lib/schemas/list-params";
 
 const EMPTY_ROWS: Appointment[] = [];
 const EMPTY_PROVIDERS: Provider[] = [];
+
+const SORT_FIELDS_BY_COLUMN: Record<string, SortField> = {
+  patient: "patient",
+  startsAt: "startsAt",
+};
 
 function SortIndicator({ sorted }: { sorted: false | "asc" | "desc" }) {
   if (sorted === "asc") return <ArrowUp className="size-3.5" />;
@@ -64,30 +66,16 @@ export function AppointmentsTable() {
   const rows = appointmentsQuery.data?.content ?? EMPTY_ROWS;
   const page = appointmentsQuery.data?.pagination;
 
-  const sorting = useMemo<SortingState>(
-    () => [
-      {
-        id: params.sortBy === "patient" ? "patient" : "startsAt",
-        desc: params.sortOrder === "desc",
-      },
-    ],
-    [params.sortBy, params.sortOrder],
-  );
-
   const paginationState = useMemo<PaginationState>(
     () => ({ pageIndex: params.page - 1, pageSize: params.pageSize }),
     [params.page, params.pageSize],
   );
 
-  const handleSortingChange = (updater: Updater<SortingState>) => {
-    const next = typeof updater === "function" ? updater(sorting) : updater;
-    const first = next[0];
-    if (!first) return;
-    controller.setSort(
-      first.id === "patient" ? "patient" : "startsAt",
-      first.desc ? "desc" : "asc",
-    );
-  };
+  function handleSort(field: SortField) {
+    const nextOrder =
+      params.sortBy === field && params.sortOrder === "asc" ? "desc" : "asc";
+    controller.setSort(field, nextOrder);
+  }
 
   const handlePaginationChange = (updater: Updater<PaginationState>) => {
     const next =
@@ -105,10 +93,8 @@ export function AppointmentsTable() {
     data: rows,
     rowCount: page?.total ?? 0,
     manualPagination: true,
-    manualSorting: true,
     getRowId: (row) => row.id,
-    state: { sorting, pagination: paginationState },
-    onSortingChange: handleSortingChange,
+    state: { pagination: paginationState },
     onPaginationChange: handlePaginationChange,
   });
 
@@ -187,31 +173,44 @@ export function AppointmentsTable() {
                 <TableHeader>
                   {table.getHeaderGroups().map((headerGroup) => (
                     <TableRow key={headerGroup.id}>
-                      {headerGroup.headers.map((header) => (
-                        <TableHead
-                          key={header.id}
-                          className={
-                            header.column.id === "patient"
-                              ? "bg-background sticky left-0 z-10"
-                              : undefined
-                          }
-                        >
-                          {header.isPlaceholder ? null : header.column.getCanSort() ? (
-                            <button
-                              type="button"
-                              onClick={header.column.getToggleSortingHandler()}
-                              className="hover:text-foreground inline-flex items-center gap-1.5"
-                            >
+                      {headerGroup.headers.map((header) => {
+                        const sortField =
+                          SORT_FIELDS_BY_COLUMN[header.column.id];
+                        const sorted: false | "asc" | "desc" =
+                          sortField && params.sortBy === sortField
+                            ? params.sortOrder
+                            : false;
+                        return (
+                          <TableHead
+                            key={header.id}
+                            aria-sort={
+                              sorted === "asc"
+                                ? "ascending"
+                                : sorted === "desc"
+                                  ? "descending"
+                                  : undefined
+                            }
+                            className={
+                              header.column.id === "patient"
+                                ? "bg-background sticky left-0 z-10"
+                                : undefined
+                            }
+                          >
+                            {header.isPlaceholder ? null : sortField ? (
+                              <button
+                                type="button"
+                                onClick={() => handleSort(sortField)}
+                                className="hover:text-foreground inline-flex items-center gap-1.5"
+                              >
+                                <table.FlexRender header={header} />
+                                <SortIndicator sorted={sorted} />
+                              </button>
+                            ) : (
                               <table.FlexRender header={header} />
-                              <SortIndicator
-                                sorted={header.column.getIsSorted()}
-                              />
-                            </button>
-                          ) : (
-                            <table.FlexRender header={header} />
-                          )}
-                        </TableHead>
-                      ))}
+                            )}
+                          </TableHead>
+                        );
+                      })}
                     </TableRow>
                   ))}
                 </TableHeader>

@@ -1,14 +1,9 @@
-import {
-  rowPaginationFeature,
-  rowSortingFeature,
-  tableFeatures,
-} from "@tanstack/react-table";
+import { rowPaginationFeature, tableFeatures } from "@tanstack/react-table";
 
 /**
- * Only the features this table actually uses. Sorting and pagination are done
- * by the server, so no client-side row models are registered.
+ * Only the feature this table uses. Paging is done by the server, and sorting
+ * is just a URL parameter, so neither needs a client-side row model.
  */
 export const appointmentTableFeatures = tableFeatures({
   rowPaginationFeature,
-  rowSortingFeature,
 });

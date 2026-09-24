@@ -25,7 +25,6 @@ export function createAppointmentColumns(
     helper.display({
       id: "patient",
       header: "Patient",
-      enableSorting: true,
       cell: ({ row }) => (
         <div className="max-w-[220px] min-w-0">
           <Link
@@ -44,24 +43,20 @@ export function createAppointmentColumns(
     helper.display({
       id: "provider",
       header: "Provider",
-      enableSorting: false,
       cell: ({ row }) =>
         providerNameById.get(row.original.providerId) ??
         row.original.providerId,
     }),
     helper.accessor("visitType", {
       header: "Visit",
-      enableSorting: false,
       cell: ({ getValue }) => VISIT_TYPE_LABELS[getValue()],
     }),
     helper.accessor("mode", {
       header: "Mode",
-      enableSorting: false,
       cell: ({ getValue }) => MODE_LABELS[getValue()],
     }),
     helper.accessor("startsAt", {
       header: "Date & time",
-      enableSorting: true,
       cell: ({ getValue }) => (
         <span className="whitespace-nowrap">
           {formatClinicDateTime(getValue())}
@@ -70,7 +65,6 @@ export function createAppointmentColumns(
     }),
     helper.accessor("status", {
       header: "Status",
-      enableSorting: false,
       cell: ({ getValue }) => <AppointmentStatusBadge status={getValue()} />,
     }),
   ]);
