@@ -11,6 +11,7 @@ import { StepPatient } from "@/components/booking/step-patient";
 import { StepPayment } from "@/components/booking/step-payment";
 import { StepReview } from "@/components/booking/step-review";
 import { StepVisit } from "@/components/booking/step-visit";
+import { ErrorState } from "@/components/common/error-state";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { ApiRequestError } from "@/lib/api/client";
@@ -136,6 +137,38 @@ export function BookingWizard() {
     setFormError(null);
   }
 
+  function renderStep() {
+    switch (step) {
+      case 0:
+        return <StepPatient form={form} />;
+      case 1:
+        if (providersQuery.isError) {
+          return (
+            <ErrorState
+              title="Couldn't load the provider list"
+              description={providersQuery.error.message}
+              onRetry={() => {
+                void providersQuery.refetch();
+              }}
+            />
+          );
+        }
+        return <StepVisit form={form} providers={providers} />;
+      case 2:
+        return <StepPayment form={form} />;
+      case 3:
+        return (
+          <StepReview
+            values={values}
+            providerName={providerName}
+            onEdit={goTo}
+          />
+        );
+      default:
+        return null;
+    }
+  }
+
   if (confirmation) {
     return (
       <BookingConfirmation
@@ -154,14 +187,7 @@ export function BookingWizard() {
 
       <Card>
         <CardContent className="pt-6">
-          {step === 0 ? <StepPatient form={form} /> : null}
-          {step === 1 ? (
-            <StepVisit form={form} providers={providers} />
-          ) : null}
-          {step === 2 ? <StepPayment form={form} /> : null}
-          {step === 3 ? (
-            <StepReview values={values} providerName={providerName} onEdit={goTo} />
-          ) : null}
+          {renderStep()}
 
           {formError ? (
             <p role="alert" className="text-destructive mt-4 text-sm">
