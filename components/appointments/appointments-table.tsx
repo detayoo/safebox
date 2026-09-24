@@ -200,7 +200,7 @@ export function AppointmentsTable() {
                               <button
                                 type="button"
                                 onClick={() => handleSort(sortField)}
-                                className="hover:text-foreground inline-flex items-center gap-1.5"
+                                className="hover:text-foreground focus-visible:ring-ring/50 inline-flex items-center gap-1.5 rounded-sm outline-none focus-visible:ring-3"
                               >
                                 <table.FlexRender header={header} />
                                 <SortIndicator sorted={sorted} />

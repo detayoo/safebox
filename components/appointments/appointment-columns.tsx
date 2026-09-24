@@ -29,7 +29,7 @@ export function createAppointmentColumns(
         <div className="max-w-[220px] min-w-0">
           <Link
             href={`/appointments/${row.original.id}`}
-            className="font-medium hover:underline"
+            className="focus-visible:ring-ring/50 rounded-sm font-medium hover:underline outline-none focus-visible:ring-3"
             onClick={(event) => event.stopPropagation()}
           >
             {patientName(row.original)}
