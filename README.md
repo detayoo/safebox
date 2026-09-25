@@ -99,8 +99,8 @@ table.
 
 ## How long it took
 
-Roughly 30 hours, most of it in the table's URL state and the booking wizard.
+Roughly 40 hours, most of it in the table's URL state and the booking wizard.
 
 ## Deployed at
 
-<fill in the live URL before submitting>
+https://safebox-sooty.vercel.app/
