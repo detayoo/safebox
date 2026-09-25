@@ -14,10 +14,11 @@ export function FailureToggle() {
         id="simulate-failure"
         checked={enabled}
         onCheckedChange={setEnabled}
+        aria-label="Simulate failed requests"
       />
       <Label
         htmlFor="simulate-failure"
-        className="text-muted-foreground cursor-pointer text-xs font-normal"
+        className="text-muted-foreground hidden cursor-pointer text-xs font-normal whitespace-nowrap sm:inline"
       >
         Simulate failures
       </Label>

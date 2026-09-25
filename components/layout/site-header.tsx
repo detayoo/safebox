@@ -15,12 +15,15 @@ export function SiteHeader() {
 
   return (
     <header className="bg-background/95 supports-[backdrop-filter]:bg-background/80 sticky top-0 z-40 border-b backdrop-blur">
-      <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between gap-4 px-4">
-        <Link href="/appointments" className="text-sm font-semibold tracking-tight">
+      <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-x-4 gap-y-1.5 px-4 py-2 sm:h-14 sm:flex-nowrap sm:py-0">
+        <Link
+          href="/appointments"
+          className="shrink-0 text-sm font-semibold tracking-tight whitespace-nowrap"
+        >
           Clinic Desk
         </Link>
 
-        <nav className="flex items-center gap-1">
+        <nav className="order-3 flex w-full items-center gap-1 sm:order-none sm:w-auto">
           {NAV_ITEMS.map((item) => {
             const active =
               pathname === item.href || pathname.startsWith(`${item.href}/`);
